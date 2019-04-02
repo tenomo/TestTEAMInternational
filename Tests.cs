@@ -1,71 +1,130 @@
 using Interview.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 
 namespace Interview
 {
-    public class Tests
+    public class InMemoryRepositoryTests
     {
-        private readonly IRepository<Book> _inMemoryBookRepository = default(IRepository<Book>);
+        private readonly InMemoryRepository<Book> _inMemoryBookRepository;
+        private IList<Book> booksList;
+
+        public InMemoryRepositoryTests()
+        {
+            booksList = new List<Book>();
+            _inMemoryBookRepository = new InMemoryRepository<Book>(booksList);
+        }
+
+        #region InMemoryRepository's ctor tests
 
         [Fact]
-        public void InMemoryRepository_manualyCreation_nullData_failed()
+        public void Constructor_NullDataSet_ThrowsArgumentNullException() =>
+            Assert.Throws<ArgumentNullException>(() => new InMemoryRepository<Book>(null));
+
+        [Fact]
+        public void Constructor_Successful() => new InMemoryRepository<Book>(new List<Book>());
+
+        #endregion
+
+        #region All method
+
+        [Fact]
+        public void All_ReturningDataSetIsNull_failed()
         {
-            Assert.Throws<NullReferenceException>(() => new InMemoryRepository<Book>(null));
+            var entities = _inMemoryBookRepository.All();
+            Assert.NotNull(entities);
         }
 
         [Fact]
-        public void InMemoryRepository_manualyCreation_successful()
+        public void All_EmpyDataSet()
         {
+            booksList = new List<Book>();
+            var ntities = _inMemoryBookRepository.All();
+            Assert.Empty(ntities);
         }
 
         [Fact]
-        public IEnumerable<Book> InMemoryRepository_All_empyDataSet_successful()
+        public void All_3Entites()
         {
-            throw new NotImplementedException();
+            booksList = new List<Book>()
+            {
+                new Book(),
+                new Book(),
+                new Book()
+            };
+            var entities = _inMemoryBookRepository.All();
+            Assert.Equal(booksList.Count, entities.Count());
+        }
+
+        #endregion
+
+        #region delete method
+
+        [Fact]
+        public void Delete_EntityIsNotExisting_ThrowsArgumentNullException()
+        {
+            booksList = new List<Book>();
+            Assert.Throws<InvalidOperationException>(() => _inMemoryBookRepository.Delete(1));
         }
 
         [Fact]
-        public IEnumerable<Book> InMemoryRepository_All_fiveElements_successful()
+        public void Delete_1Entity()
         {
-            throw new NotImplementedException();
+            booksList = new List<Book>()
+            {
+                new Book() {Id = 1}
+            };
+            _inMemoryBookRepository.Delete(1);
+            Assert.Empty(booksList);
+        }
+
+        #endregion
+
+        [Fact]
+        public void Save_EntityIsExisting_ThrowsArgumentNullException()
+        {
+            var entity = new Book() {Id = 1};
+            booksList = new List<Book>()
+            {
+                entity
+            };
+            Assert.Throws<InvalidOperationException>(() => _inMemoryBookRepository.Save(entity));
         }
 
         [Fact]
-        public void InMemoryRepository_Delete_isNotExisting_failed()
+        public void Save_1Entity()
         {
-            throw new NotImplementedException();
+            var entity = new Book() {Id = 1};
+            booksList = new List<Book>();
+            Assert.NotEmpty(booksList);
         }
 
         [Fact]
-        public void InMemoryRepository_Delete_successful()
+        public void FindById_EnttyFound()
         {
-            throw new NotImplementedException();
+            var entity = new Book() {Id = 1};
+            booksList = new List<Book>()
+            {
+                entity,
+                new Book() {Id = 2}
+            };
+            var foundEntity = _inMemoryBookRepository.FindById(entity.Id);
+            Assert.NotNull(foundEntity);
+            Assert.Equal(entity.Id, foundEntity.Id);
         }
 
-        [Fact]
-        public void InMemoryRepository_Save_isExisting_failed()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void InMemoryRepository_Save_successful()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public void InMemoryRepository_FindById_successful()
-        {
-            throw new NotImplementedException();
-        }
         [Fact]
         public void InMemoryRepository_FindById_notFound_successful()
         {
-            throw new NotImplementedException();
+            booksList = new List<Book>()
+            {
+                new Book() {Id = 2}
+            };
+            var foundEntity = _inMemoryBookRepository.FindById(1);
+            Assert.Null(foundEntity);
         }
     }
 }
