@@ -81,6 +81,8 @@ namespace Interview
 
         #endregion
 
+        #region Save method
+
         [Fact]
         public void Save_EntityIsExisting_ThrowsArgumentNullException()
         {
@@ -102,6 +104,10 @@ namespace Interview
             inMemoryBookRepository.Save(entity);
             Assert.NotEmpty(booksList);
         }
+
+        #endregion
+
+        #region FindById method
 
         [Fact]
         public void FindById_EnttyFound()
@@ -129,5 +135,7 @@ namespace Interview
             var foundEntity = inMemoryBookRepository.FindById(1);
             Assert.Null(foundEntity);
         }
+
+        #endregion
     }
 }
