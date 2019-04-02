@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Interview.Repositories
 {
@@ -14,22 +15,28 @@ namespace Interview.Repositories
 
         public IEnumerable<TEntity> All()
         {
-            throw new NotImplementedException();
+            return _dataSet;
         }
 
         public void Delete(IComparable id)
         {
-            throw new NotImplementedException();
+            var entity = _dataSet.FirstOrDefault(ent => ent.Id == id);
+            if (entity == null)
+                throw new InvalidOperationException($"The entity by id {id} was not found in the storage."); // should change to specific exception
+            _dataSet.Remove(entity);
         }
 
         public void Save(TEntity item)
         {
-            throw new NotImplementedException();
+            if (_dataSet.Any(entity => entity.Id == item.Id))
+                throw new InvalidOperationException($"The entity by id {item.Id} is existing in the storage."); // should change to specific exception
+            _dataSet.Add(item);
         }
 
         public TEntity FindById(IComparable id)
         {
-            throw new NotImplementedException();
+            var entity = _dataSet.FirstOrDefault(ent => ent.Id == id);
+            return entity;
         }
     }
 }
