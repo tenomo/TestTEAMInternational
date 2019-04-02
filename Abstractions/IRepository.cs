@@ -5,11 +5,11 @@ namespace Interview
 {
     // Please create an in memory implementation of IRepository<T> 
 
-    public interface IRepository<T> where T : IStoreable
+    public interface IRepository<TEntity> where TEntity : IStoreable
     {
-        IEnumerable<T> All();
+        IEnumerable<TEntity> All();
         void Delete(IComparable id);
-        void Save(T item);
-        T FindById(IComparable id);
+        void Save(TEntity item);
+        TEntity FindById(IComparable id);
     }
 }
